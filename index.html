@@ -120,6 +120,10 @@ drop-shadow(0 0 45px rgba(255,255,255,.10));
 animation:logoPulse 4s ease-in-out infinite
 }
 
+.brand-logo.music-active{
+animation:logoGlow 1.5s ease-in-out infinite;
+}
+
 @keyframes logoPulse{
 0%,100%{
 transform:scale(1);
@@ -184,6 +188,27 @@ transform:scale(.75)
 }
 }
 
+@keyframes musicActive{
+0%{
+box-shadow:0 0 8px rgba(255,255,255,.3)
+}
+50%{
+box-shadow:0 0 20px rgba(100,180,255,.8), 0 0 35px rgba(100,180,255,.4)
+}
+100%{
+box-shadow:0 0 8px rgba(255,255,255,.3)
+}
+}
+
+@keyframes logoGlow{
+0%,100%{
+filter:drop-shadow(0 0 18px rgba(255,255,255,.25)) drop-shadow(0 0 42px rgba(255,255,255,.08))
+}
+50%{
+filter:drop-shadow(0 0 28px rgba(100,180,255,.5)) drop-shadow(0 0 60px rgba(100,180,255,.25))
+}
+}
+
 .brand-tip{
 margin-top:17px;
 min-height:18px;
@@ -245,6 +270,10 @@ background:linear-gradient(
 );
 box-shadow:0 0 12px rgba(255,255,255,.5);
 transition:width .25s ease
+}
+
+.progress-fill.music-active{
+animation:musicActive 1.5s ease-in-out infinite;
 }
 
 .progress-fill::after{
@@ -738,6 +767,7 @@ const muteBtn=document.getElementById("muteBtn");
 const musicButtonText=document.getElementById("musicButtonText");
 const languageSelect=document.getElementById("languageSelect");
 const brandTag=document.getElementById("brandTag");
+const brandLogo=document.querySelector(".brand-logo");
 const volumeIcon=document.querySelector(".volume-icon svg path");
 
 const progressBar=document.getElementById("loadProgress");
@@ -746,6 +776,9 @@ const statusText=document.getElementById("loadStatus");
 const tipText=document.getElementById("loadTip");
 
 let currentLanguage="it";
+
+console.log("brandLogo element:", brandLogo);
+console.log("progressBar element:", progressBar);
 
 video.volume=0;
 
@@ -781,10 +814,17 @@ music.play().then(()=>{
 
 musicStarted=true;
 musicButtonText.textContent="STOP";
+progressBar.classList.add("music-active");
+if(brandLogo){
+brandLogo.classList.add("music-active");
+}
 
-}).catch(()=>{
+console.log("Music started, effects applied");
+
+}).catch((error)=>{
 
 musicStarted=false;
+console.log("Music play failed:", error);
 
 });
 
@@ -837,6 +877,12 @@ music.play().then(()=>{
 
 musicStarted=true;
 musicButtonText.textContent="STOP";
+progressBar.classList.add("music-active");
+if(brandLogo){
+brandLogo.classList.add("music-active");
+}
+
+console.log("Music started via mute button");
 
 }).catch(()=>{});
 
@@ -847,6 +893,12 @@ music.muted=true;
 musicStarted=false;
 musicStoppedByUser=true;
 musicButtonText.textContent="PLAY";
+progressBar.classList.remove("music-active");
+if(brandLogo){
+brandLogo.classList.remove("music-active");
+}
+
+console.log("Music stopped via mute button");
 
 }
 
@@ -862,14 +914,26 @@ volumeValue.textContent=value+"%";
 if(value===0){
 
 music.muted=true;
+music.pause();
+musicStoppedByUser=true;
+musicButtonText.textContent="PLAY";
+progressBar.classList.remove("music-active");
+if(brandLogo){
+brandLogo.classList.remove("music-active");
+}
 volumeIcon.setAttribute("d","M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C23.16 14.49 24 12.86 24 11c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z");
 
 }else{
 
 music.muted=false;
+musicStoppedByUser=false;
 
-if(!music.paused&&!musicStoppedByUser){
+if(!music.paused){
 musicButtonText.textContent="STOP";
+progressBar.classList.add("music-active");
+if(brandLogo){
+brandLogo.classList.add("music-active");
+}
 }
 
 volumeIcon.setAttribute("d","M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z");
