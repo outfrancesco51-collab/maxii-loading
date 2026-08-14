@@ -269,7 +269,7 @@ background:linear-gradient(
 #aaaaaa
 );
 box-shadow:0 0 12px rgba(255,255,255,.5);
-transition:width .25s ease
+transition:width 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease
 }
 
 .progress-fill.music-active{
@@ -309,7 +309,7 @@ background:linear-gradient(
 #ffffff,
 #dddddd
 );
-box-shadow:0 0 20px rgba(255,255,255,.7)
+box-shadow:0 0 35px rgba(255,255,255,.9), 0 0 15px rgba(255,255,255,.6)
 }
 
 .footer{
@@ -1038,45 +1038,63 @@ tipText.style.opacity="1";
 },300);
 }
 
-const loadingInterval=setInterval(()=>{
+let isLoaded = false;
 
-const increment=Math.floor(Math.random()*4)+1;
-
-progress+=increment;
-
-const messages_map={
-it:messages,
-en:englishMessages,
-fr:frenchMessages,
-de:germanMessages,
-ja:japaneseMessages
+function animateValue(obj, start, end, duration) {
+let startTimestamp = null;
+const step = (timestamp) => {
+if (!startTimestamp) startTimestamp = timestamp;
+const p = Math.min((timestamp - startTimestamp) / duration, 1);
+const ease = 1 - Math.pow(1 - p, 4);
+obj.textContent = Math.floor(ease * (end - start) + start) + "%";
+if (p < 1) window.requestAnimationFrame(step);
 };
-
-const currentMessages=messages_map[currentLanguage];
-
-if(progress>=100){
-
-progress=100;
-
-clearInterval(loadingInterval);
-
-statusText.textContent=currentMessages[5];
-progressPercent.textContent="100%";
-
-progressBar.classList.add("complete");
-
-}else{
-
-const index=Math.floor((progress/100)*(currentMessages.length-1));
-
-statusText.textContent=currentMessages[index];
-progressPercent.textContent=progress+"%";
-
+window.requestAnimationFrame(step);
 }
 
-progressBar.style.width=progress+"%";
+function simulateLoading() {
+if(isLoaded) return;
 
-},180);
+const increment = Math.floor(Math.random() * 12) + 3;
+progress += increment;
+
+const messages_map = {
+it: messages,
+en: englishMessages,
+fr: frenchMessages,
+de: germanMessages,
+ja: japaneseMessages
+};
+
+const currentMessages = messages_map[currentLanguage];
+
+if(progress >= 100) {
+progress = 100;
+isLoaded = true;
+
+statusText.textContent = currentMessages[5];
+const currentVal = parseInt(progressPercent.textContent) || 0;
+animateValue(progressPercent, currentVal, 100, 500);
+
+progressBar.style.width = "100%";
+progressBar.classList.add("complete");
+} else {
+const index = Math.floor((progress / 100) * (currentMessages.length - 1));
+statusText.textContent = currentMessages[index];
+
+const currentVal = parseInt(progressPercent.textContent) || 0;
+animateValue(progressPercent, currentVal, progress, 400);
+
+progressBar.style.width = progress + "%";
+
+let delay = Math.random() * 250 + 150;
+if (Math.random() < 0.15) delay += 500; // random hang
+
+setTimeout(simulateLoading, delay);
+}
+}
+
+setTimeout(simulateLoading, 300);
 
 const tips=[
 
