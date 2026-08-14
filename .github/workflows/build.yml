@@ -1,0 +1,73 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Get project version
+      id: version
+      run: |
+        VERSION=$(grep -oP '(?<="version": ")[^"]*' package.json || echo "1.0.0")
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+    - name: Create distribution directory
+      run: mkdir -p dist
+
+    - name: Copy files to dist
+      run: |
+        cp fxmanifest.lua dist/
+        cp index.html dist/
+        cp LICENSE dist/
+        cp README.md dist/
+        if [ -f music_yt.mp3 ]; then cp music_yt.mp3 dist/; fi
+        if [ -f background.mp4 ]; then cp background.mp4 dist/; fi
+        if [ -f logo.png ]; then cp logo.png dist/; fi
+
+    - name: Create ZIP archive
+      run: |
+        cd dist
+        zip -r ../maxii-loading-v${{ steps.version.outputs.version }}.zip .
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: MAXII STUDIO Loading Screen Release
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./maxii-loading-v${{ steps.version.outputs.version }}.zip
+        asset_name: maxii-loading-v${{ steps.version.outputs.version }}.zip
+        asset_content_type: application/zip
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: maxii-loading
+        path: dist/
