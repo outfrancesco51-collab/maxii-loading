@@ -1,0 +1,15 @@
+{
+  "title": "MAXII STUDIO",
+  "brandTag": {
+    "it": "Soluzioni digitali, senza compromessi.",
+    "en": "Digital solutions, without compromise.",
+    "fr": "Solutions numériques, sans compromis.",
+    "de": "Digitale Lösungen ohne Kompromisse.",
+    "ja": "デジタルソリューション、妥協なし。"
+  },
+  "defaultVolume": 15,
+  "discordUrl": "https://discord.gg/C4GPF6JevM",
+  "playlist": [
+    "music_yt.mp3"
+  ]
+}

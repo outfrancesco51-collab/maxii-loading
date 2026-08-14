@@ -667,10 +667,58 @@ width:65px
 }
 
 }
+body { cursor: none; }
+.custom-cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 6px; height: 6px;
+    background: #ffffff;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+.custom-cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    width: 30px; height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    transition: width 0.2s, height 0.2s, background 0.2s;
+}
+.custom-cursor-hover {
+    width: 50px !important;
+    height: 50px !important;
+    background: rgba(255, 255, 255, 0.1);
+    border-color: transparent;
+}
+.progress-fill::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -5px;
+  width: 10px;
+  height: 200%;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.9), 0 0 30px 10px rgba(255, 255, 255, 0.8);
+  filter: blur(2px);
+  z-index: 2;
+  transition: opacity 0.3s;
+}
+.progress-fill.complete::before {
+  opacity: 0;
+}
 </style>
 </head>
 
 <body>
+<div class="custom-cursor-dot"></div>
+<div class="custom-cursor-ring"></div>
 
 <div class="video-wrapper">
 <div class="custom-dropdown">
@@ -770,6 +818,7 @@ href="https://discord.gg/C4GPF6JevM"
 target="_blank"
 rel="noopener"
 class="discord-link"
+id="discordLink"
 >
 
 <svg viewBox="0 0 24 24">
@@ -1442,6 +1491,77 @@ requestAnimationFrame(particleLoop);
 
 particleLoop();
 
+// Config JSON Loading
+fetch('config.json')
+  .then(response => response.json())
+  .then(config => {
+    if (config.title) document.title = config.title;
+    if (config.discordUrl) {
+      const discordLink = document.getElementById("discordLink");
+      if (discordLink) discordLink.href = config.discordUrl;
+    }
+    if (config.brandTag && brandTag) {
+      Object.assign(brandTags, config.brandTag);
+      brandTag.textContent = brandTags[currentLanguage];
+    }
+    if (config.defaultVolume !== undefined && volumeSlider) {
+      volumeSlider.value = config.defaultVolume;
+      const event = new Event('input');
+      volumeSlider.dispatchEvent(event);
+    }
+    if (config.playlist && Array.isArray(config.playlist)) {
+      playlist.length = 0;
+      playlist.push(...config.playlist);
+      music.src = playlist[0];
+    }
+  })
+  .catch(err => console.log('No config.json found or invalid JSON.', err));
+
+// Custom Cursor Logic
+const cursorDot = document.querySelector('.custom-cursor-dot');
+const cursorRing = document.querySelector('.custom-cursor-ring');
+
+let mouseX = window.innerWidth/2, mouseY = window.innerHeight/2;
+let ringX = mouseX, ringY = mouseY;
+
+document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    cursorDot.style.left = `${mouseX}px`;
+    cursorDot.style.top = `${mouseY}px`;
+});
+
+function animateCursor() {
+    ringX += (mouseX - ringX) * 0.15;
+    ringY += (mouseY - ringY) * 0.15;
+    cursorRing.style.left = `${ringX}px`;
+    cursorRing.style.top = `${ringY}px`;
+    requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.addEventListener('mouseover', (e) => {
+    if (e.target.tagName.toLowerCase() === 'button' || 
+        e.target.tagName.toLowerCase() === 'a' || 
+        e.target.tagName.toLowerCase() === 'input' || 
+        e.target.tagName.toLowerCase() === 'select' ||
+        e.target.closest('.dropdown-list li') || 
+        e.target.closest('.discord-link') ||
+        e.target.closest('.icon-music-btn')) {
+        cursorRing.classList.add('custom-cursor-hover');
+    }
+});
+document.addEventListener('mouseout', (e) => {
+    if (e.target.tagName.toLowerCase() === 'button' || 
+        e.target.tagName.toLowerCase() === 'a' || 
+        e.target.tagName.toLowerCase() === 'input' || 
+        e.target.tagName.toLowerCase() === 'select' ||
+        e.target.closest('.dropdown-list li') || 
+        e.target.closest('.discord-link') ||
+        e.target.closest('.icon-music-btn')) {
+        cursorRing.classList.remove('custom-cursor-hover');
+    }
+});
 </script>
 
 </body>

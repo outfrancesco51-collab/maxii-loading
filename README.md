@@ -271,7 +271,21 @@ echo "ensure maxii_loading" >> server.cfg
 # restart
 ```
 
-### Metodo 2: Setup Automatizzato (PowerShell)
+### Metodo 2: Download rapido tramite cURL
+
+```bash
+# Scarica l'ultima release direttamente nella cartella resources tramite cURL
+mkdir -p resources/maxii_loading
+curl -L https://github.com/outfrancesco51-collab/maxii-loading/archive/refs/heads/main.zip -o maxii_loading.zip
+unzip maxii_loading.zip -d resources/
+mv resources/maxii-loading-main/* resources/maxii_loading/
+rm -rf resources/maxii-loading-main maxii_loading.zip
+
+# Aggiungi al server.cfg
+echo "ensure maxii_loading" >> server.cfg
+```
+
+### Metodo 3: Setup Automatizzato (PowerShell)
 
 ```powershell
 # Per Windows
