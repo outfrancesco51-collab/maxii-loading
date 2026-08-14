@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAXII STUDIO</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0
+}
+
+html,body{
+width:100%;
+height:100%;
+overflow:hidden;
+background:#020202;
+font-family:'Poppins',sans-serif;
+user-select:none
+}
+
+.video-wrapper{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+z-index:0;
+overflow:hidden;
+background:#020202
+}
+
+#bgVideo{
+position:absolute;
+inset:0;
+width:100%;
+height:100%;
+object-fit:cover;
+object-position:center;
+transform:scale(1.05);
+filter:brightness(.42) contrast(1.12) saturate(0)
+}
+
+.dark-overlay{
+position:fixed;
+inset:0;
+z-index:1;
+pointer-events:none;
+background:
+radial-gradient(
+circle at 50% 45%,
+rgba(255,255,255,.045),
+transparent 42%
+),
+linear-gradient(
+to bottom,
+rgba(0,0,0,.35) 0%,
+rgba(0,0,0,.55) 50%,
+rgba(0,0,0,.94) 100%
+)
+}
+
+.vignette{
+position:fixed;
+inset:0;
+z-index:2;
+pointer-events:none;
+box-shadow:inset 0 0 180px 45px rgba(0,0,0,.85)
+}
+
+#emberCanvas{
+position:fixed;
+inset:0;
+width:100%;
+height:100%;
+z-index:3;
+pointer-events:none;
+opacity:.38
+}
+
+.stage{
+position:absolute;
+left:50%;
+bottom:13%;
+transform:translateX(-50%);
+width:min(700px,90vw);
+display:flex;
+flex-direction:column;
+align-items:center;
+text-align:center;
+z-index:10;
+animation:fadeIn .9s ease forwards
+}
+
+@keyframes fadeIn{
+from{
+opacity:0;
+transform:translate(-50%,20px)
+}
+to{
+opacity:1;
+transform:translate(-50%,0)
+}
+}
+
+.brand-logo{
+display:block;
+width:auto;
+height:155px;
+max-width:75vw;
+object-fit:contain;
+filter:
+drop-shadow(0 0 18px rgba(255,255,255,.28))
+drop-shadow(0 0 45px rgba(255,255,255,.10));
+animation:logoPulse 4s ease-in-out infinite
+}
+
+@keyframes logoPulse{
+0%,100%{
+transform:scale(1);
+filter:
+drop-shadow(0 0 18px rgba(255,255,255,.25))
+drop-shadow(0 0 42px rgba(255,255,255,.08))
+}
+
+50%{
+transform:scale(1.025);
+filter:
+drop-shadow(0 0 25px rgba(255,255,255,.55))
+drop-shadow(0 0 55px rgba(255,255,255,.18))
+}
+}
+
+.brand-tag{
+margin-top:12px;
+color:rgba(255,255,255,.88);
+font-size:12px;
+font-weight:600;
+letter-spacing:4px;
+text-transform:uppercase;
+text-shadow:0 2px 15px rgba(0,0,0,.9)
+}
+
+.status-badge{
+margin-top:13px;
+display:flex;
+align-items:center;
+gap:7px;
+padding:6px 13px;
+border:1px solid rgba(255,255,255,.25);
+border-radius:999px;
+background:rgba(255,255,255,.06);
+color:#ffffff;
+font-size:9px;
+font-weight:700;
+letter-spacing:1.6px;
+text-transform:uppercase;
+box-shadow:0 0 20px rgba(255,255,255,.04)
+}
+
+.status-dot{
+width:6px;
+height:6px;
+border-radius:50%;
+background:#ffffff;
+box-shadow:0 0 8px rgba(255,255,255,.8);
+animation:statusPulse 1.5s infinite
+}
+
+@keyframes statusPulse{
+0%,100%{
+opacity:1;
+transform:scale(1)
+}
+
+50%{
+opacity:.45;
+transform:scale(.75)
+}
+}
+
+.brand-tip{
+margin-top:17px;
+min-height:18px;
+color:rgba(255,255,255,.72);
+font-size:11px;
+font-weight:500;
+font-style:italic;
+text-shadow:0 2px 10px rgba(0,0,0,.9);
+transition:opacity .35s ease,transform .35s ease
+}
+
+.progress-block{
+width:100%;
+margin-top:30px
+}
+
+.progress-labels{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px
+}
+
+.progress-status{
+color:rgba(255,255,255,.82);
+font-size:10px;
+font-weight:600;
+letter-spacing:1.3px;
+text-transform:uppercase
+}
+
+.progress-percent{
+color:#ffffff;
+font-size:11px;
+font-weight:700;
+letter-spacing:.5px
+}
+
+.progress-track{
+position:relative;
+width:100%;
+height:3px;
+overflow:hidden;
+border-radius:10px;
+background:rgba(255,255,255,.12);
+box-shadow:0 0 15px rgba(0,0,0,.7)
+}
+
+.progress-fill{
+position:relative;
+width:0%;
+height:100%;
+border-radius:10px;
+background:linear-gradient(
+90deg,
+#555555,
+#ffffff,
+#aaaaaa
+);
+box-shadow:0 0 12px rgba(255,255,255,.5);
+transition:width .25s ease
+}
+
+.progress-fill::after{
+content:"";
+position:absolute;
+top:0;
+left:-50%;
+width:50%;
+height:100%;
+background:linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.9),
+transparent
+);
+animation:shimmer 1.7s infinite
+}
+
+@keyframes shimmer{
+from{
+left:-50%
+}
+
+to{
+left:150%
+}
+}
+
+.progress-fill.complete{
+background:linear-gradient(
+90deg,
+#888888,
+#ffffff,
+#dddddd
+);
+box-shadow:0 0 20px rgba(255,255,255,.7)
+}
+
+.footer{
+position:fixed;
+left:50%;
+bottom:28px;
+transform:translateX(-50%);
+width:min(700px,90vw);
+z-index:20;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding-top:14px;
+border-top:1px solid rgba(255,255,255,.09)
+}
+
+.discord-link{
+display:flex;
+align-items:center;
+gap:8px;
+color:rgba(255,255,255,.7);
+font-size:10px;
+font-weight:700;
+letter-spacing:1.5px;
+text-transform:uppercase;
+text-decoration:none;
+cursor:pointer;
+transition:color .2s ease,transform .2s ease
+}
+
+.discord-link:hover{
+color:#ffffff;
+transform:translateY(-1px)
+}
+
+.discord-link svg{
+width:15px;
+height:15px;
+fill:currentColor
+}
+
+.volume{
+display:flex;
+align-items:center;
+gap:10px
+}
+
+.music-button{
+display:flex;
+align-items:center;
+justify-content:center;
+min-width:50px;
+height:24px;
+padding:0 10px;
+border:1px solid rgba(255,255,255,.28);
+border-radius:6px;
+background:rgba(255,255,255,.06);
+color:#ffffff;
+font-family:'Poppins',sans-serif;
+font-size:8px;
+font-weight:700;
+letter-spacing:1px;
+cursor:pointer;
+transition:
+background .2s ease,
+border-color .2s ease,
+transform .2s ease,
+box-shadow .2s ease
+}
+
+.music-button:hover{
+background:rgba(255,255,255,.12);
+border-color:rgba(255,255,255,.65);
+box-shadow:0 0 12px rgba(255,255,255,.12);
+transform:translateY(-1px)
+}
+
+.volume-icon{
+display:flex;
+align-items:center;
+justify-content:center;
+width:22px;
+height:22px;
+padding:0;
+border:none;
+background:transparent;
+color:rgba(255,255,255,.65);
+cursor:default
+}
+
+.volume-icon svg{
+width:15px;
+height:15px;
+fill:currentColor
+}
+
+input[type="range"]{
+appearance:none;
+-webkit-appearance:none;
+width:75px;
+height:3px;
+border-radius:10px;
+background:rgba(255,255,255,.15);
+outline:none;
+cursor:pointer
+}
+
+input[type="range"]::-webkit-slider-thumb{
+appearance:none;
+-webkit-appearance:none;
+width:9px;
+height:9px;
+border-radius:50%;
+background:#ffffff;
+box-shadow:0 0 8px rgba(255,255,255,.6)
+}
+
+input[type="range"]::-moz-range-thumb{
+width:9px;
+height:9px;
+border:none;
+border-radius:50%;
+background:#ffffff;
+box-shadow:0 0 8px rgba(255,255,255,.6)
+}
+
+.vol-indicator{
+width:30px;
+color:rgba(255,255,255,.5);
+font-size:9px;
+font-weight:600;
+text-align:right
+}
+
+.corner-tag{
+position:fixed;
+left:20px;
+bottom:18px;
+z-index:20;
+color:rgba(255,255,255,.3);
+font-size:9px;
+font-weight:700;
+letter-spacing:2px
+}
+
+@media(max-width:700px){
+
+.stage{
+bottom:17%;
+width:88vw
+}
+
+.brand-logo{
+height:100px
+}
+
+.brand-tag{
+font-size:9px;
+letter-spacing:2px
+}
+
+.brand-tip{
+font-size:10px
+}
+
+.footer{
+width:88vw;
+bottom:20px
+}
+
+.corner-tag{
+display:none
+}
+
+.volume{
+gap:7px
+}
+
+.music-button{
+min-width:48px;
+padding:0 8px
+}
+
+input[type="range"]{
+width:65px
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<div class="video-wrapper">
+
+<video
+id="bgVideo"
+autoplay
+muted
+loop
+playsinline
+preload="auto"
+>
+<source src="background.mp4" type="video/mp4">
+</video>
+
+</div>
+
+<div class="dark-overlay"></div>
+<div class="vignette"></div>
+
+<canvas id="emberCanvas"></canvas>
+
+<audio id="bgMusic" loop preload="auto">
+<source src="music_yt.mp3" type="audio/mpeg">
+</audio>
+
+<main class="stage">
+
+<img
+class="brand-logo"
+src="logo.png"
+alt="MAXII STUDIO"
+>
+
+<div class="brand-tag">
+Soluzioni digitali, senza compromessi.
+</div>
+
+<div class="status-badge">
+<span class="status-dot"></span>
+Studio Online
+</div>
+
+<div
+class="brand-tip"
+id="loadTip"
+></div>
+
+<div class="progress-block">
+
+<div class="progress-labels">
+
+<div
+class="progress-status"
+id="loadStatus"
+>
+Connessione...
+</div>
+
+<div
+class="progress-percent"
+id="loadPercent"
+>
+0%
+</div>
+
+</div>
+
+<div class="progress-track">
+
+<div
+class="progress-fill"
+id="loadProgress"
+></div>
+
+</div>
+
+</div>
+
+</main>
+
+<footer class="footer">
+
+<a
+href="https://discord.gg/C4GPF6JevM"
+target="_blank"
+rel="noopener"
+class="discord-link"
+>
+
+<svg viewBox="0 0 24 24">
+
+<path d="M20.317 4.369a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.058a.082.082 0 0 0 .031.056 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128c.126-.094.252-.192.372-.291a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.073.073 0 0 1 .078.009c.12.099.246.198.373.292a.077.077 0 0 1-.006.127c-.598.35-1.22.645-1.873.893a.076.076 0 0 0-.041.106c.36.698.772 1.362 1.225 1.993a.078.078 0 0 0 .084.029 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.055c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.331c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.21 0 2.176 1.095 2.157 2.418 0 1.334-.955 2.419-2.157 2.419zm7.974 0c-1.183 0-2.157-1.085-2.419-2.419 0-1.333.946-2.418 2.157-2.418 1.21 0 2.176 1.095 2.157 2.418 0 1.334-.946 2.419-2.157 2.419z"/>
+
+</svg>
+
+Discord
+
+</a>
+
+<div class="volume">
+
+<button
+id="muteBtn"
+class="music-button"
+type="button"
+>
+
+<span id="musicButtonText">STOP</span>
+
+</button>
+
+<button
+class="volume-icon"
+type="button"
+tabindex="-1"
+aria-label="Volume"
+>
+
+<svg viewBox="0 0 24 24">
+
+<path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25-2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+
+</svg>
+
+</button>
+
+<input
+id="volumeSlider"
+type="range"
+min="0"
+max="100"
+value="15"
+>
+
+<span
+id="volumeValue"
+class="vol-indicator"
+>
+15%
+</span>
+
+</div>
+
+</footer>
+
+<div class="corner-tag">
+MAXII STUDIO
+</div>
+
+<script>
+
+const video=document.getElementById("bgVideo");
+const music=document.getElementById("bgMusic");
+const volumeSlider=document.getElementById("volumeSlider");
+const volumeValue=document.getElementById("volumeValue");
+const muteBtn=document.getElementById("muteBtn");
+const musicButtonText=document.getElementById("musicButtonText");
+
+const progressBar=document.getElementById("loadProgress");
+const progressPercent=document.getElementById("loadPercent");
+const statusText=document.getElementById("loadStatus");
+const tipText=document.getElementById("loadTip");
+
+video.volume=0;
+
+function startVideo(){
+
+video.play().catch(()=>{
+
+setTimeout(()=>{
+
+video.play().catch(()=>{});
+
+},1000);
+
+});
+
+}
+
+startVideo();
+
+let musicStarted=false;
+let musicStoppedByUser=false;
+
+music.volume=.15;
+
+function startMusic(){
+
+if(musicStoppedByUser)return;
+if(!music.paused)return;
+
+music.muted=false;
+
+music.play().then(()=>{
+
+musicStarted=true;
+musicButtonText.textContent="STOP";
+
+}).catch(()=>{
+
+musicStarted=false;
+
+});
+
+}
+
+startMusic();
+
+document.addEventListener("click",()=>{
+
+if(!musicStoppedByUser&&music.paused){
+startMusic();
+}
+
+});
+
+document.addEventListener("keydown",()=>{
+
+if(!musicStoppedByUser&&music.paused){
+startMusic();
+}
+
+});
+
+document.addEventListener("mousemove",()=>{
+
+if(!musicStoppedByUser&&music.paused){
+startMusic();
+}
+
+});
+
+muteBtn.addEventListener("click",event=>{
+
+event.stopPropagation();
+
+if(music.paused){
+
+musicStoppedByUser=false;
+music.muted=false;
+
+if(Number(volumeSlider.value)===0){
+
+volumeSlider.value=15;
+music.volume=.15;
+volumeValue.textContent="15%";
+
+}
+
+music.play().then(()=>{
+
+musicStarted=true;
+musicButtonText.textContent="STOP";
+
+}).catch(()=>{});
+
+}else{
+
+music.pause();
+music.muted=true;
+musicStarted=false;
+musicStoppedByUser=true;
+musicButtonText.textContent="PLAY";
+
+}
+
+});
+
+volumeSlider.addEventListener("input",function(){
+
+const value=Number(this.value);
+
+music.volume=value/100;
+volumeValue.textContent=value+"%";
+
+if(value===0){
+
+music.muted=true;
+
+}else{
+
+music.muted=false;
+
+if(!music.paused&&!musicStoppedByUser){
+musicButtonText.textContent="STOP";
+}
+
+}
+
+});
+
+const messages=[
+
+"Connessione al server...",
+"Autenticazione in corso...",
+"Caricamento ambiente...",
+"Verifica configurazione...",
+"Preparazione finale...",
+"MAXII STUDIO pronto."
+
+];
+
+let progress=0;
+
+const loadingInterval=setInterval(()=>{
+
+const increment=Math.floor(Math.random()*4)+1;
+
+progress+=increment;
+
+if(progress>=100){
+
+progress=100;
+
+clearInterval(loadingInterval);
+
+statusText.textContent=messages[5];
+progressPercent.textContent="100%";
+
+progressBar.classList.add("complete");
+
+}else{
+
+const index=Math.floor(
+(progress/100)*(messages.length-1)
+);
+
+statusText.textContent=messages[index];
+progressPercent.textContent=progress+"%";
+
+}
+
+progressBar.style.width=progress+"%";
+
+},180);
+
+const tips=[
+
+"Soluzioni digitali professionali, pensate per le tue esigenze.",
+"Qualità e precisione in ogni progetto.",
+"Design moderno. Sviluppo professionale. Risultati concreti.",
+"Trasformiamo le tue idee in soluzioni digitali.",
+"Progetti curati nei dettagli, sviluppati per durare.",
+"Scopri i prodotti e i servizi disponibili sullo store MAXII.",
+"Per assistenza e informazioni, entra nel nostro Discord.",
+"Discord: discord.gg/C4GPF6JevM"
+
+];
+
+let tipIndex=0;
+
+function showTip(){
+
+tipText.style.opacity="0";
+
+setTimeout(()=>{
+
+tipText.textContent=tips[tipIndex];
+tipText.style.opacity="1";
+
+tipIndex++;
+
+if(tipIndex>=tips.length){
+tipIndex=0;
+}
+
+},300);
+
+}
+
+showTip();
+
+setInterval(showTip,4500);
+
+const canvas=document.getElementById("emberCanvas");
+const ctx=canvas.getContext("2d");
+
+let particles=[];
+
+function resizeCanvas(){
+
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+}
+
+resizeCanvas();
+
+window.addEventListener("resize",resizeCanvas);
+
+class Particle{
+
+constructor(){
+this.reset(true);
+}
+
+reset(initial=false){
+
+this.x=Math.random()*canvas.width;
+
+this.y=initial
+?Math.random()*canvas.height
+:canvas.height+10;
+
+this.size=Math.random()*1.4+.3;
+
+this.speed=Math.random()*.35+.08;
+
+this.drift=(Math.random()-.5)*.15;
+
+this.alpha=Math.random()*.4+.1;
+
+}
+
+update(){
+
+this.y-=this.speed;
+this.x+=this.drift;
+
+if(this.y<-10){
+this.reset();
+}
+
+}
+
+draw(){
+
+ctx.beginPath();
+
+ctx.arc(
+this.x,
+this.y,
+this.size,
+0,
+Math.PI*2
+);
+
+ctx.fillStyle=
+`rgba(255,255,255,${this.alpha})`;
+
+ctx.fill();
+
+}
+
+}
+
+for(let i=0;i<45;i++){
+particles.push(new Particle());
+}
+
+function particleLoop(){
+
+ctx.clearRect(
+0,
+0,
+canvas.width,
+canvas.height
+);
+
+for(const particle of particles){
+
+particle.update();
+particle.draw();
+
+}
+
+requestAnimationFrame(particleLoop);
+
+}
+
+particleLoop();
+
+</script>
+
+</body>
+</html>
