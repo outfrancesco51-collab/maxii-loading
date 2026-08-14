@@ -15,7 +15,7 @@
 
 ## 📊 Status & Badges
 
-![Version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)
 ![License](https://img.shields.io/badge/license-Custom%20Proprietaria-red?style=flat-square)
 ![FiveM](https://img.shields.io/badge/FiveM-Compatible-brightgreen?style=flat-square)
 ![Languages](https://img.shields.io/badge/languages-5-orange?style=flat-square)
@@ -315,7 +315,7 @@ ENV FIVEM_LOADING_SCREEN="maxii_loading"
 {
   "metadata": {
     "name": "MAXII Loading Screen",
-    "version": "2.1.0",
+    "version": "1.0.0",
     "description": "Professional FiveM Loading Screen"
   },
   "ui": {
@@ -778,7 +778,7 @@ game 'gta5'
 
 author 'MAXII Studio'
 description 'Professional Loading Screen'
-version '2.1.0'
+version '1.0.0'
 
 -- Solo come loading screen
 loadingScreenScript 'index.html'
@@ -808,18 +808,18 @@ function handleFrequentEvent() {
 ### Semantic Versioning
 
 ```
-MAXII Loading Screen v2.1.0
+MAXII Loading Screen v1.0.0
                     │ │ │
-                    │ │ └─ PATCH: Bug fixes (2.1.0 → 2.1.1)
-                    │ └──── MINOR: Features (2.1.0 → 2.2.0)
-                    └─────── MAJOR: Breaking changes (2.1.0 → 3.0.0)
+                    │ │ └─ PATCH: Bug fixes (1.0.0 → 2.1.1)
+                    │ └──── MINOR: Features (1.0.0 → 2.2.0)
+                    └─────── MAJOR: Breaking changes (1.0.0 → 3.0.0)
 ```
 
 ### Cronologia Versioni
 
 | Versione | Data | Note |
 |----------|------|------|
-| **2.1.0** | 2026-01 | ✅ Music effects, fix audio |
+| **1.0.0** | 2026-01 | ✅ Music effects, fix audio |
 | **2.0.0** | 2025-12 | ✅ 5-language support |
 | **1.5.0** | 2025-11 | ✅ GitHub Actions CI/CD |
 | **1.0.0** | 2025-10 | ✅ Initial release |
@@ -883,7 +883,7 @@ class ClassName { } // PascalCase
 
 ## 📋 CHANGELOG
 
-### v2.1.0 (2026-01-14)
+### v1.0.0 (2026-01-14)
 ```
 🎉 Major Release - Music Effects & Stability
 
@@ -1369,7 +1369,7 @@ ENV FIVEM_LOADING_SCREEN="maxii_loading"
 {
   "metadata": {
     "name": "MAXII Loading Screen",
-    "version": "2.1.0",
+    "version": "1.0.0",
     "description": "Professional FiveM Loading Screen"
   },
   "ui": {
@@ -1832,7 +1832,7 @@ game 'gta5'
 
 author 'MAXII Studio'
 description 'Professional Loading Screen'
-version '2.1.0'
+version '1.0.0'
 
 -- Only as loading screen
 loadingScreenScript 'index.html'
@@ -1862,18 +1862,18 @@ function handleFrequentEvent() {
 ### Semantic Versioning
 
 ```
-MAXII Loading Screen v2.1.0
+MAXII Loading Screen v1.0.0
                     │ │ │
-                    │ │ └─ PATCH: Bug fixes (2.1.0 → 2.1.1)
-                    │ └──── MINOR: Features (2.1.0 → 2.2.0)
-                    └─────── MAJOR: Breaking changes (2.1.0 → 3.0.0)
+                    │ │ └─ PATCH: Bug fixes (1.0.0 → 2.1.1)
+                    │ └──── MINOR: Features (1.0.0 → 2.2.0)
+                    └─────── MAJOR: Breaking changes (1.0.0 → 3.0.0)
 ```
 
 ### Version History
 
 | Version | Date | Notes |
 |---------|------|-------|
-| **2.1.0** | 2026-01 | ✅ Music effects, fix audio |
+| **1.0.0** | 2026-01 | ✅ Music effects, fix audio |
 | **2.0.0** | 2025-12 | ✅ 5-language support |
 | **1.5.0** | 2025-11 | ✅ GitHub Actions CI/CD |
 | **1.0.0** | 2025-10 | ✅ Initial release |
@@ -1937,7 +1937,7 @@ class ClassName { } // PascalCase
 
 ## 📋 CHANGELOG
 
-### v2.1.0 (2026-01-14)
+### v1.0.0 (2026-01-14)
 ```
 🎉 Major Release - Music Effects & Stability
 
@@ -2026,7 +2026,7 @@ dynamic visual effects, and comprehensive multilingual support.
 
 ---
 
-**Version 2.1.0** — © 2026 MAXII STUDIO — All Rights Reserved
+**Version 1.0.0** — © 2026 MAXII STUDIO — All Rights Reserved
 
 Made for the FiveM Community with passion and attention to detail.
 

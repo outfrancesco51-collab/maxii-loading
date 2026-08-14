@@ -481,71 +481,104 @@ right:20px;
 z-index:30;
 }
 
-.language-selector select{
+.custom-dropdown {
+position:fixed;
+top:20px;
+right:20px;
+z-index:30;
+font-family:'Poppins',sans-serif;
+user-select:none;
+}
+
+.dropdown-btn {
+display:flex;
+align-items:center;
+gap:8px;
 padding:8px 14px;
 border:1px solid rgba(255,255,255,.28);
 border-radius:6px;
 background:rgba(255,255,255,.06);
 color:#ffffff;
-font-family:'Poppins',sans-serif;
 font-size:10px;
 font-weight:600;
 letter-spacing:1px;
 cursor:pointer;
--webkit-backdrop-filter:blur(6px);
 backdrop-filter:blur(6px);
+-webkit-backdrop-filter:blur(6px);
 transition:all .2s ease;
 box-shadow:0 0 15px rgba(0,0,0,.5);
 }
 
-.language-selector select:hover{
+.dropdown-btn:hover {
 background:rgba(255,255,255,.12);
 border-color:rgba(255,255,255,.65);
 box-shadow:0 0 20px rgba(255,255,255,.15);
 }
 
-.language-selector select:focus{
+.dropdown-btn:focus {
 outline:none;
-background:rgba(255,255,255,.15);
 border-color:rgba(255,255,255,.8);
-box-shadow:0 0 25px rgba(255,255,255,.25);
 }
 
-.language-selector select option{
-background:#0a0a0a;
-color:#ffffff;
-padding:12px 10px;
+.dropdown-btn .arrow {
+width:14px;
+height:14px;
+fill:currentColor;
+transition:transform 0.3s ease;
+}
+
+.custom-dropdown.open .dropdown-btn .arrow {
+transform:rotate(180deg);
+}
+
+.dropdown-list {
+position:absolute;
+top:calc(100% + 8px);
+right:0;
+width:max-content;
+min-width:140px;
+background:rgba(10, 10, 10, 0.95);
+border:1px solid rgba(255,255,255,.15);
+border-radius:6px;
+padding:6px 0;
+list-style:none;
+opacity:0;
+visibility:hidden;
+transform:translateY(-10px);
+transition:all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+box-shadow:0 5px 25px rgba(0,0,0,0.8);
+backdrop-filter:blur(10px);
+-webkit-backdrop-filter:blur(10px);
+}
+
+.custom-dropdown.open .dropdown-list {
+opacity:1;
+visibility:visible;
+transform:translateY(0);
+}
+
+.dropdown-list li {
+display:flex;
+align-items:center;
+gap:10px;
+padding:10px 16px;
+color:#dddddd;
 font-size:10px;
 font-weight:600;
-border:none;
-line-height:1.6;
-margin:0;
-border-bottom:1px solid rgba(255,255,255,.08);
+letter-spacing:1px;
+cursor:pointer;
+transition:all 0.2s ease;
 }
 
-.language-selector select option:last-child{
-border-bottom:none;
+.dropdown-list li:hover {
+background:rgba(255,255,255,.1);
+color:#ffffff;
 }
 
-.language-selector select option:hover{
-background:#1a3a5f;
-}
-
-.language-selector select option:checked{
-background:#2563eb;
+.dropdown-list li.selected {
+background:rgba(37, 99, 235, 0.8);
 color:#ffffff;
 font-weight:700;
-}
-
-/* Firefox */
-@-moz-document url-prefix() {
-.language-selector select{
-background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-background-repeat:no-repeat;
-background-position:right 8px center;
-background-size:16px;
-padding-right:35px;
-}
 }
 
 
@@ -640,14 +673,18 @@ width:65px
 <body>
 
 <div class="video-wrapper">
-<div class="language-selector">
-<select id="languageSelect">
-<option value="en">🇬🇧 ENGLISH</option>
-<option value="it">🇮🇹 ITALIANO</option>
-<option value="fr">🇫🇷 FRANÇAIS</option>
-<option value="de">🇩🇪 DEUTSCH</option>
-<option value="ja">🇯🇵 日本語</option>
-</select>
+<div class="custom-dropdown">
+  <button class="dropdown-btn" id="dropdownBtn">
+    <span class="flag">🇮🇹</span> <span class="lang-text">ITALIANO</span>
+    <svg viewBox="0 0 24 24" class="arrow"><path d="M7 10l5 5 5-5z"/></svg>
+  </button>
+  <ul class="dropdown-list" id="dropdownList">
+    <li data-value="en"><span class="flag">🇬🇧</span> ENGLISH</li>
+    <li data-value="it" class="selected"><span class="flag">🇮🇹</span> ITALIANO</li>
+    <li data-value="fr"><span class="flag">🇫🇷</span> FRANÇAIS</li>
+    <li data-value="de"><span class="flag">🇩🇪</span> DEUTSCH</li>
+    <li data-value="ja"><span class="flag">🇯🇵</span> 日本語</li>
+  </ul>
 </div>
 <video
 id="bgVideo"
@@ -815,9 +852,13 @@ const muteBtn=document.getElementById("muteBtn");
 const prevBtn=document.getElementById("prevBtn");
 const nextBtn=document.getElementById("nextBtn");
 const musicButtonText=document.getElementById("musicButtonText");
-const languageSelect=document.getElementById("languageSelect");
 const brandTag=document.getElementById("brandTag");
 const brandLogo=document.querySelector(".brand-logo");
+const dropdownContainer = document.querySelector('.custom-dropdown');
+const dropdownBtn = document.getElementById('dropdownBtn');
+const dropdownList = document.getElementById('dropdownList');
+const langText = dropdownBtn.querySelector('.lang-text');
+const langFlag = dropdownBtn.querySelector('.flag');
 const volumeIcon=document.querySelector(".volume-icon svg path");
 
 const progressBar=document.getElementById("loadProgress");
@@ -1080,9 +1121,30 @@ const japaneseMessages=[
 
 let progress=0;
 
-languageSelect.addEventListener("change",(e)=>{
-currentLanguage=e.target.value;
-updateLanguage();
+dropdownBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  dropdownContainer.classList.toggle('open');
+});
+
+dropdownList.querySelectorAll('li').forEach(item => {
+  item.addEventListener('click', () => {
+    dropdownList.querySelectorAll('li').forEach(li => li.classList.remove('selected'));
+    item.classList.add('selected');
+    
+    langText.textContent = item.textContent.replace(item.querySelector('.flag').textContent, '').trim();
+    langFlag.textContent = item.querySelector('.flag').textContent;
+    
+    currentLanguage = item.getAttribute('data-value');
+    updateLanguage();
+    
+    dropdownContainer.classList.remove('open');
+  });
+});
+
+document.addEventListener('click', (e) => {
+  if (dropdownContainer && !dropdownContainer.contains(e.target)) {
+    dropdownContainer.classList.remove('open');
+  }
 });
 
 const brandTags={

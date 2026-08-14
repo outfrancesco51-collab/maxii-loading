@@ -6,6 +6,9 @@ on:
     tags: [ 'v*' ]
   pull_request:
     branches: [ main, master ]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [copy-repo]
 
 jobs:
   build:
